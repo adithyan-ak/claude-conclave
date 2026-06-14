@@ -107,7 +107,7 @@ Otherwise it **abstains** and hands you a ranked Pareto shortlist with the exact
 > Requires [Claude Code](https://docs.claude.com/en/docs/claude-code) with the **Workflow** tool available (the deterministic multi-agent orchestration runtime). The engine is plain JavaScript executed by that runtime — no `npm install`, no dependencies.
 
 ```bash
-git clone https://github.com/<you>/claude-conclave.git
+git clone https://github.com/adithyan-ak/claude-conclave.git
 # Install as a user-level skill:
 mkdir -p ~/.claude/skills/conclave
 cp claude-conclave/skill/SKILL.md     ~/.claude/skills/conclave/
