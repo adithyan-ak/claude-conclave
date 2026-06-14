@@ -1,0 +1,22 @@
+# Conclave runtime scratch (verifier artifacts agents write while scoring)
+tmp/
+varcheck/
+*.log
+
+# Frozen constitution / replay artifacts (regenerated per run)
+constitution.*.json
+candidates.frozen.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# Node (in case a test shim is added later)
+node_modules/
+npm-debug.log*
+.env
+.env.local

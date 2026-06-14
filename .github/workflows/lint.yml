@@ -1,0 +1,49 @@
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# No untrusted input is interpolated anywhere in this workflow; all steps run
+# static checks over the checked-out repo file skill/conclave.js.
+permissions:
+  contents: read
+
+jobs:
+  syntax:
+    name: engine syntax + invariant checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Engine must parse as valid JS
+        run: node --check skill/conclave.js
+
+      - name: Forbidden non-determinism (Date.now / Math.random / argless new Date)
+        run: |
+          if grep -nE 'Date\.now\(|Math\.random\(|new Date\(\)' skill/conclave.js; then
+            echo "::error::conclave.js must not use Date.now()/Math.random()/new Date() - breaks deterministic replay"
+            exit 1
+          fi
+          echo "OK: no non-deterministic primitives"
+
+      - name: Forbidden Node builtins (engine must be self-contained)
+        run: |
+          if grep -nE "require\(|^import |__dirname|readFileSync" skill/conclave.js; then
+            echo "::error::conclave.js must be self-contained - no require/import/fs/__dirname"
+            exit 1
+          fi
+          echo "OK: self-contained"
+
+      - name: Rejected model tiers must not appear in agent() calls
+        run: |
+          if grep -nE "model:\s*'(fable|mythos)'" skill/conclave.js; then
+            echo "::error::fable/mythos are rejected by the Workflow agent() resolver - use opus/sonnet/haiku"
+            exit 1
+          fi
+          echo "OK: only valid model tiers"
